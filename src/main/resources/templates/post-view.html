@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+    <div>
+        <h2>게시글 상세 정보</h2>
+    </div>
+    제목: <span th:text="${post.title}">글 제목</span><br/>
+    글쓴이: <span th:text="${post.author}">글쓴이</span><br/>
+    본문: <span th:text="${post.content}">글 본문</span></br>
+    첨부파일: <a th:if="${post.attachFile}" th:href="|/posts/attach-file/${post.postId}|">이미지 다운로드</a></br>
+    <img th:if="${post.attachFile}" th:src="|/images/${post.attachFile}|" width="350" height="350">
+</div>
+</body>
+</html>
