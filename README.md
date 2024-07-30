@@ -247,6 +247,7 @@
   }
 ```
 #### 댓글 목록 조회
+```
 응답 데이터 예시
 {
     "totalPages": 3,
@@ -254,7 +255,7 @@
     "first": true,
     "last": false,
     "size": 20,
-    "content": 
+    "content": [
        {
             "commentId": 1,
             "memberId": 5,
@@ -304,7 +305,7 @@
             "likesYn": false
         },
         ...
-    ,
+    ],
     "number": 0,
     "sort": {
         "empty": true,
@@ -372,5 +373,6 @@
     
     return new PageImpl<>(commentQueryDtoList, pageable, totalCount);
   }
+```
 #### 대댓글 목록 조회
 #### API 응답 시간 1.5초 이상인 경우 관리자에게 메일 알림(스프링AOP)
