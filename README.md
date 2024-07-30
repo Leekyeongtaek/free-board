@@ -254,7 +254,7 @@
     "first": true,
     "last": false,
     "size": 20,
-    "content": [
+    "content": 
        {
             "commentId": 1,
             "memberId": 5,
@@ -304,7 +304,7 @@
             "likesYn": false
         },
         ...
-    ],
+    ,
     "number": 0,
     "sort": {
         "empty": true,
@@ -328,11 +328,49 @@
 }
 
 컨트롤러 계층
-@GetMapping("/{postId}/comments")
-public ResponseEntity<Page<CommentQueryDtoList>> parentCommentList(@PathVariable(name = "postId") Long postId, @RequestParam(name =  
+  @GetMapping("/{postId}/comments")
+  public ResponseEntity<Page<CommentQueryDtoList>> parentCommentList(@PathVariable(name = "postId") Long postId, @RequestParam(name =  
   "loginMemberId") Long loginMemberId,Pageable pageable) {
-    Page<CommentQueryDtoList> result = postService.findParentComments(postId, loginMemberId, pageable);
-    return new ResponseEntity<>(result, OK);
-}
+      Page<CommentQueryDtoList> result = postService.findParentComments(postId, loginMemberId, pageable);
+      return new ResponseEntity<>(result, OK);
+  }
+
+서비스 계층
+  public Page<CommentQueryDtoList> findParentComments(Long postId, Long loginMemberId, Pageable pageable) {
+    return commentQueryRepository.findParentComments(postId, loginMemberId, pageable);
+  }
+
+저장소 계층
+  public Page<CommentQueryDtoList> findParentComments(Long postId, Long loginMemberId, Pageable pageable) {
+  
+    QComment childComment = new QComment("childComment");
+    
+    List<CommentQueryDtoList> commentQueryDtoList = queryFactory
+            .select(new QCommentQueryDtoList(comment.id, comment.content, comment.likes,
+                    comment.createdDate, comment.hiddenYn, member.id, member.nickName,
+                    commentLikesMapping.isNotNull(), childComment.count(), post.member.id))
+            .from(comment)
+            .join(comment.member, member)
+            .join(comment.post, post)
+            .leftJoin(commentLikesMapping).on(commentLikesMapping.id.commentId.eq(comment.id)
+                    .and(commentLikesMapping.id.memberId.eq(loginMemberId)))
+            .leftJoin(childComment).on(childComment.parentComment.id.eq(comment.id))
+            .where(
+                    comment.post.id.eq(postId),
+                    comment.parentComment.id.isNull())
+            .groupBy(comment.id)
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+    
+    Long totalCount = queryFactory.select(comment.count())
+            .from(comment)
+            .where(
+                    comment.post.id.eq(postId),
+                    comment.parentComment.id.isNull())
+            .fetchOne();
+    
+    return new PageImpl<>(commentQueryDtoList, pageable, totalCount);
+  }
 #### 대댓글 목록 조회
 #### API 응답 시간 1.5초 이상인 경우 관리자에게 메일 알림(스프링AOP)
