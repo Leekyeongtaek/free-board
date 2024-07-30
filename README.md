@@ -53,7 +53,7 @@
 ### 테이블 ERD
 <img width="800" alt="free_board_ERD1" src="https://github.com/user-attachments/assets/b9e27313-f564-49a3-9d3d-edf89bbe6013">
 
-### 주요 기능 코드
+### API 기능 소개
 #### 게시글 등록
 ```
 요청 데이터 예시
@@ -62,7 +62,8 @@
     "content" : "본문 내용",
     "memberId" : "1",
     "type" : "FREE" //(FREE, TRAVEL, FOOD, SPORT) 타입 존재
-}입
+}
+#### 게시글 상세 조회
 응답 데이터 예시
 {
     "postId": "게시글 번호",
