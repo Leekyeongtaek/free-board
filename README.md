@@ -57,12 +57,31 @@
 #### 게시글 등록
 ```
 요청 데이터 예시
-{
-    "title" : "게시글의 제목",
-    "content" : "본문 내용",
-    "memberId" : "1",
-    "type" : "FREE" //(FREE, TRAVEL, FOOD, SPORT) 타입 존재
-}
+  {
+      "title" : "게시글의 제목",
+      "content" : "본문 내용",
+      "memberId" : "1",
+      "type" : "FREE" //(FREE, TRAVEL, FOOD, SPORT) 타입 존재
+  }
+
+컨트롤러 계층
+  @PostMapping
+  public ResponseEntity<Void> postAdd(@RequestBody PostSaveForm form) {
+      postService.addPost(form);
+      return new ResponseEntity<>(OK);
+  }
+
+서비스 계층
+  public void addPost(PostSaveForm form) {
+    if (form.getTitle().contains("critical")) {
+        throw new CriticalException("CriticalException 발생.");
+    }
+    Member member = memberRepository.findById(form.getMemberId())
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 회원 정보를 찾을 수 없습니다."));
+    Post post = form.toPostEntity(member);
+    postRepository.save(post);
+  }
+```
 #### 게시글 상세 조회
 응답 데이터 예시
 {
