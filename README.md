@@ -375,4 +375,183 @@
   }
 ```
 #### 대댓글 목록 조회
+```
+응답 데이터 예시
+{
+    "totalPages": 2,
+    "totalElements": 30,
+    "first": true,
+    "last": false,
+    "size": 20,
+    "content": [
+        {
+            "commentId": 591,
+            "parentCommentId": 4,
+            "memberId": 8,
+            "author": "사용자8",
+            "content": "하위 댓글",
+            "likes": 0,
+            "createdDate": "2024-07-30T20:48:10",
+            "likesYn": false,
+            "authorYn": false
+        },
+        {
+            "commentId": 592,
+            "parentCommentId": 4,
+            "memberId": 8,
+            "author": "사용자8",
+            "content": "하위 댓글",
+            "likes": 0,
+            "createdDate": "2024-07-30T20:48:10",
+            "likesYn": false,
+            "authorYn": false
+        },
+        {
+            "commentId": 593,
+            "parentCommentId": 4,
+            "memberId": 8,
+            "author": "사용자8",
+            "content": "하위 댓글",
+            "likes": 0,
+            "createdDate": "2024-07-30T20:48:10",
+            "likesYn": false,
+            "authorYn": false
+        },
+        {
+            "commentId": 594,
+            "parentCommentId": 4,
+            "memberId": 8,
+            "author": "사용자8",
+            "content": "하위 댓글",
+            "likes": 0,
+            "createdDate": "2024-07-30T20:48:10",
+            "likesYn": false,
+            "authorYn": false
+        },
+        ...
+    ],
+    "number": 0,
+    "sort": {
+        "empty": true,
+        "unsorted": true,
+        "sorted": false
+    },
+    "pageable": {
+        "pageNumber": 0,
+        "pageSize": 20,
+        "sort": {
+            "empty": true,
+            "unsorted": true,
+            "sorted": false
+        },
+        "offset": 0,
+        "unpaged": false,
+        "paged": true
+    },
+    "numberOfElements": 20,
+    "empty": false
+}
+
+컨트롤러 계층
+  @GetMapping("/comments/{commentId}")
+  public ResponseEntity<Page<ChildCommentQueryDto>> childCommentList(@PathVariable(name = "commentId") Long commentId,
+    @RequestParam(name = "loginMemberId") Long loginMemberId,Pageable pageable) {
+      Page<ChildCommentQueryDto> childComments = postService.findChildComments(commentId, pageable, loginMemberId);
+      return new ResponseEntity<>(childComments, OK);
+  }
+
+서비스 계층
+  public Page<ChildCommentQueryDto> findChildComments(Long commentId, Pageable pageable, Long loginMemberId) {
+    return commentQueryRepository.findChildComments(pageable, commentId, loginMemberId);
+  }
+
+저장소 계층
+  public Page<ChildCommentQueryDto> findChildComments(Pageable pageable, Long commentId, Long loginMemberId) {
+
+    List<ChildCommentQueryDto> childCommentQueryDtoList = queryFactory
+            .select(new QChildCommentQueryDto(
+                    comment.id, comment.parentComment.id, member.id,
+                    member.nickName, comment.likes, comment.createdDate, comment.content,
+                    comment.hiddenYn, commentLikesMapping.isNotNull(), post.member.id))
+            .from(comment)
+            .join(comment.member, member)
+            .join(comment.post, post)
+            .leftJoin(commentLikesMapping).on(commentLikesMapping.id.commentId.eq(comment.id)
+                    .and(commentLikesMapping.id.memberId.eq(loginMemberId)))
+            .where(
+                    comment.parentComment.id.eq(commentId))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+  
+    Long totalCount = queryFactory.select(comment.count())
+            .from(comment)
+            .where(
+                    comment.parentComment.id.eq(commentId))
+            .fetchOne();
+  
+    return new PageImpl<>(childCommentQueryDtoList, pageable, totalCount);
+  }
+```
 #### API 응답 시간 1.5초 이상인 경우 관리자에게 메일 알림(스프링AOP)
+```
+@Slf4j
+@RequiredArgsConstructor
+@Aspect
+@Component
+public class MyAspect {
+
+    private final MyMailSender myMailSender;
+
+    @Around(value = "execution(* com.mrlee.free_board.post.service.PostService.*(..))")
+    public Object checkExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+        long startTime = System.currentTimeMillis();
+        Object result = joinPoint.proceed();
+        long endTime = System.currentTimeMillis();
+        long executionTime = endTime - startTime;
+        checkExecutionTime(executionTime, joinPoint);
+        return result;
+    }
+
+    private void checkExecutionTime(long executionTime, ProceedingJoinPoint joinPoint) {
+        if (executionTime > 1500) {
+            log.info("실행 시간 = {}", executionTime);
+            log.info("실행 메서드 = {}", joinPoint.getSignature().toShortString());
+            myMailSender.sendMail(MyMailMessage.LowQualityMailMessage);
+        }
+    }
+}
+
+@RequiredArgsConstructor
+@Component
+public class MyMailSender {
+
+    private final JavaMailSender javaMailSender;
+
+    private final static String receiver = "lkt0520@naver.com";
+
+    public void sendMail(MyMailMessage myMailMessage) {
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setSubject(myMailMessage.getSubject());
+        simpleMailMessage.setText(myMailMessage.getText());
+        simpleMailMessage.setTo(receiver);
+        javaMailSender.send(simpleMailMessage);
+    }
+}
+
+@Getter
+@RequiredArgsConstructor
+public enum MyMailMessage {
+
+    CriticalMailMessage("[치명적 오류 발생 알림] 자유 게시판 관리자 확인 요망", "서버 로그를 확인 해주시기 바랍니다."),
+    LowQualityMailMessage("[매우 늦은 쿼리 발생 알림] API 응답 속도가 매우 느림 관리자 확인 요망", "서버 로그를 확인 해주시기 바랍니다.");
+
+    MyMailMessage(String subject, String text) {
+        this.subject = subject;
+        this.text = text;
+    }
+
+    private String subject;
+    private String text;
+}
+```
