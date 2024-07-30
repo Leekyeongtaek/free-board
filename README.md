@@ -1,15 +1,15 @@
 # free-board 포트폴리오(작성자 이경택)
-## 프로젝트 주제
+## 프로젝트 주제와 특이사항
 - 게시글, 댓글을 기능을 제공하는 소규모 게시판 프로그램
 
 ## 목차
-- [프로젝트 상세](#프로젝트-상석세)
+- [프로젝트 상세](#프로젝트-버전-정보)
 - [요구사항 분석](#요구사항-분석)
 - [기능 요구사항 상세](#기능-요구사항-상세)
 - [테이블 ERD](#테이블-ERD)
 - [API 코드](#API-코드)
 
-### 프로젝트 상세
+### 프로젝트 버전 정보
 - 개발환경 : 인텔리제이
 - 자바 : 17
 - 스프링부트 : 3.3.1
@@ -33,33 +33,33 @@
   - 대댓글 등록
   - 대댓글 목록 조회
   - 좋아요 등록/삭제
-- 공통
-  - 치명적 예외 발생시 또는 API 응답 시간 1.5초 이상인 경우 관리자에게 알림 메일 전송
+- 공통 기능
+  - 치명적 예외 발생 또는 API 응답 시간 1.5초 이상인 경우 관리자에게 로그를 확인하라는 경고 메일을 전송
 
 ### 기능 요구사항 상세
 - 게시글 기능
   - 삭제
-    - 데이터를 실제로 삭제하지 않고, 숨김 상태로 변경
+    - 데이터를 실제로 삭제하지 않고, 숨김 상태로 변경한다
   - 상세 조회
-    - 해당 게시글의 조회수가 1만큼 오름
+    - 해당 게시글의 조회수가 1만큼 오른다
   - 목록 조회
     - 페이징 기능
-    - 글의 제목, 타입으로 검색 가능
-    - 본문의 길이가 100을 넘는 경우 뒷부분은 "..."로 표시
-    - 삭제된 글은 조회하지 않음
+    - 글의 제목, 타입으로 조건 검색이 가능하다
+    - 본문의 길이가 100을 넘는 경우 뒷부분은 "..."로 표시한다
+    - 삭제된 글은 조회하지 않는다
   - 좋아요 등록/삭제
-    - post_likes_mapping 테이블에 데이터가 없는 경우 생성하고, 이미 존재하는 경우는 삭제
+    - post_likes_mapping 테이블에 데이터가 없는 경우 생성하고, 이미 존재하는 경우는 삭제한다
 - 댓글 기능
   - 목록 조회
     - 페이징 기능
-    - 게시글 작성자 여부를 나타내는 필드 포함
-    - 좋아요 여부를 나타내는 필드 포함
-    - 대댓글의 개수를 나타내는 필드 포함
-    - 삭제한 댓글은 "삭제된 댓글입니다"로 표시
+    - 게시글 작성자 여부를 나타내는 필드 포함한다
+    - 좋아요 여부를 나타내는 필드 포함한다
+    - 대댓글의 개수를 나타내는 필드 포함한다
+    - 삭제한 댓글은 "삭제된 댓글입니다"로 표시한다
   - 삭제  
-    - 실제 데이터를 삭제하지 않고, 숨김 상태로 변경
+    - 실제 데이터를 삭제하지 않고, 숨김 상태로 변경한다
   - 좋아요 등록/삭제
-    - comment_likes_mapping 테이블에 데이터가 없는 경우 생성, 이미 존재하는 경우는 삭제
+    - comment_likes_mapping 테이블에 데이터가 없는 경우 생성, 이미 존재하는 경우는 삭제한다
 
 ### 테이블 ERD
 <img width="800" alt="free_board_ERD1" src="https://github.com/user-attachments/assets/b9e27313-f564-49a3-9d3d-edf89bbe6013">
@@ -72,7 +72,7 @@
       "title" : "게시글의 제목",
       "content" : "본문 내용",
       "memberId" : "1",
-      "type" : "FREE" //(FREE, TRAVEL, FOOD, SPORT) 타입 존재
+      "type" : "FREE" //(FREE, TRAVEL, FOOD, SPORT) ENUM 타입 존재
   }
 
 컨트롤러 계층
@@ -84,8 +84,7 @@
 
 서비스 계층
   public void addPost(PostSaveForm form) {
-    Member member = memberRepository.findById(form.getMemberId())
-            .orElseThrow(() -> new IllegalArgumentException("해당하는 회원 정보를 찾을 수 없습니다."));
+    Member member = memberRepository.findById(form.getMemberId()).orElseThrow(() -> new IllegalArgumentException("해당하는 회원 정보를 찾을 수 없습니다."));
     Post post = form.toPostEntity(member);
     postRepository.save(post);
   }
@@ -107,9 +106,9 @@
 
 컨트롤러 계층
   @GetMapping("/{postId}")
-  public ResponseEntity<PostQueryDto> postDetails(@PathVariable(name = "postId") Long postId, @RequestParam(name = "loginMemberId") Long        loginMemberId) {
-      PostQueryDto postQueryDto = postService.findPost(postId, loginMemberId);
-      return new ResponseEntity<>(postQueryDto, OK);
+  public ResponseEntity<PostQueryDto> postDetails(@PathVariable(name = "postId") Long postId, @RequestParam(name = "loginMemberId") Long loginMemberId) {
+    PostQueryDto postQueryDto = postService.findPost(postId, loginMemberId);
+    return new ResponseEntity<>(postQueryDto, OK);
   }
 
 서비스 계층
@@ -208,16 +207,15 @@
 
 컨트롤러 계층
   @GetMapping
-  public ResponseEntity<Page<PostQueryDtoList>> postList(Pageable pageable, @ModelAttribute PostSearchForm form) throws
-  InterruptedException {
-        Page<PostQueryDtoList> posts = postService.searchPosts(pageable, form);
-        return new ResponseEntity<>(posts, OK);
+  public ResponseEntity<Page<PostQueryDtoList>> postList(Pageable pageable, @ModelAttribute PostSearchForm form) throws InterruptedException {
+    Page<PostQueryDtoList> posts = postService.searchPosts(pageable, form);
+    return new ResponseEntity<>(posts, OK);
   }
 
 서비스 계층
   public Page<PostQueryDtoList> searchPosts(Pageable pageable, PostSearchForm form) throws InterruptedException {
-        return postQueryRepository.searchPosts(pageable, form);
-    }
+    return postQueryRepository.searchPosts(pageable, form);
+  }
 
 저장소 계층
   public Page<PostQueryDtoList> searchPosts(Pageable pageable, PostSearchForm form) {
@@ -286,9 +284,9 @@
 ```
 컨트롤러 계층
   @PostMapping("/{postId}/like")
-    public ResponseEntity<Void> requestCommentLike(@PathVariable(name = "postId") Long postId, @RequestBody PostLikesSaveForm form) {
-      postService.requestPostLike(postId, form);
-      return new ResponseEntity<>(OK);
+  public ResponseEntity<Void> requestCommentLike(@PathVariable(name = "postId") Long postId, @RequestBody PostLikesSaveForm form) {
+    postService.requestPostLike(postId, form);
+    return new ResponseEntity<>(OK);
   }
 
 서비스 계층
@@ -400,8 +398,8 @@
 
 컨트롤러 계층
   @GetMapping("/{postId}/comments")
-  public ResponseEntity<Page<CommentQueryDtoList>> parentCommentList(@PathVariable(name = "postId") Long postId, @RequestParam(name =  
-  "loginMemberId") Long loginMemberId,Pageable pageable) {
+  public ResponseEntity<Page<CommentQueryDtoList>> parentCommentList(@PathVariable(name = "postId") Long postId, @RequestParam(name = "loginMemberId") Long loginMemberId,
+    Pageable pageable) {
       Page<CommentQueryDtoList> result = postService.findParentComments(postId, loginMemberId, pageable);
       return new ResponseEntity<>(result, OK);
   }
@@ -525,7 +523,7 @@
 컨트롤러 계층
   @GetMapping("/comments/{commentId}")
   public ResponseEntity<Page<ChildCommentQueryDto>> childCommentList(@PathVariable(name = "commentId") Long commentId,
-    @RequestParam(name = "loginMemberId") Long loginMemberId,Pageable pageable) {
+    @RequestParam(name = "loginMemberId") LongloginMemberId,Pageable pageable) {
       Page<ChildCommentQueryDto> childComments = postService.findChildComments(commentId, pageable, loginMemberId);
       return new ResponseEntity<>(childComments, OK);
   }
