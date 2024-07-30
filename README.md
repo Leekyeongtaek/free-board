@@ -247,5 +247,92 @@
   }
 ```
 #### 댓글 목록 조회
+응답 데이터 예시
+{
+    "totalPages": 3,
+    "totalElements": 50,
+    "first": true,
+    "last": false,
+    "size": 20,
+    "content": [
+       {
+            "commentId": 1,
+            "memberId": 5,
+            "author": "사용자5",
+            "content": "부모 댓글",
+            "likes": 0,
+            "createdDate": "2024-07-30T20:23:55",
+            "hasChild": true,
+            "childCommentCount": 30,
+            "authorYn": false,
+            "likesYn": false
+        },
+        {
+            "commentId": 2,
+            "memberId": 5,
+            "author": "사용자5",
+            "content": "부모 댓글",
+            "likes": 0,
+            "createdDate": "2024-07-30T20:23:55",
+            "hasChild": true,
+            "childCommentCount": 30,
+            "authorYn": false,
+            "likesYn": false
+        },
+        {
+            "commentId": 3,
+            "memberId": 5,
+            "author": "사용자5",
+            "content": "부모 댓글",
+            "likes": 0,
+            "createdDate": "2024-07-30T20:23:55",
+            "hasChild": true,
+            "childCommentCount": 30,
+            "authorYn": false,
+            "likesYn": false
+        },
+        {
+            "commentId": 4,
+            "memberId": 5,
+            "author": "사용자5",
+            "content": "부모 댓글",
+            "likes": 0,
+            "createdDate": "2024-07-30T20:23:55",
+            "hasChild": true,
+            "childCommentCount": 30,
+            "authorYn": false,
+            "likesYn": false
+        },
+        ...
+    ],
+    "number": 0,
+    "sort": {
+        "empty": true,
+        "unsorted": true,
+        "sorted": false
+    },
+    "pageable": {
+        "pageNumber": 0,
+        "pageSize": 20,
+        "sort": {
+            "empty": true,
+            "unsorted": true,
+            "sorted": false
+        },
+        "offset": 0,
+        "unpaged": false,
+        "paged": true
+    },
+    "numberOfElements": 20,
+    "empty": false
+}
+
+컨트롤러 계층
+@GetMapping("/{postId}/comments")
+public ResponseEntity<Page<CommentQueryDtoList>> parentCommentList(@PathVariable(name = "postId") Long postId, @RequestParam(name =  
+  "loginMemberId") Long loginMemberId,Pageable pageable) {
+    Page<CommentQueryDtoList> result = postService.findParentComments(postId, loginMemberId, pageable);
+    return new ResponseEntity<>(result, OK);
+}
 #### 대댓글 목록 조회
 #### API 응답 시간 1.5초 이상인 경우 관리자에게 메일 알림(스프링AOP)
