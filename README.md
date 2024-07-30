@@ -156,9 +156,9 @@
             "content": "게시글 내용",
             "views": 1,
             "likes": 0,
-            "commentCount": 650,
+            "commentCount": 650, //댓글의 개수
             "type": "FREE",
-            "author": "사용자1",
+            "author": "사용자1", //댓글 작성 회원의 닉네임
             "createdDate": "2024-07-30T20:01:05"
         },
         {
@@ -275,7 +275,7 @@
   @Entity
   public class Post extends AuditingTime {
     ...
-    private boolean hiddenYn;
+    private boolean hiddenYn; //숨김 여부 필드
 
     public void hide() {
         this.hiddenYn = true;
@@ -333,10 +333,10 @@
             "content": "부모 댓글",
             "likes": 0,
             "createdDate": "2024-07-30T20:23:55",
-            "hasChild": true,
-            "childCommentCount": 30,
-            "authorYn": false,
-            "likesYn": false
+            "hasChild": true, //대댓글이 있는 지 여부
+            "childCommentCount": 30, //대댓글의 개수
+            "authorYn": false, //게시글의 작성자가 작성한 댓글인지 여부
+            "likesYn": false //현재 로그인한 회원이 해당 댓글을 좋아요 했는지 여부 
         },
         {
             "commentId": 2,
