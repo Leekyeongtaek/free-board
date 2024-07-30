@@ -50,4 +50,4 @@
   - 치명적 예외 발생시와 API 응답 시간 1.5초 이상인 경우 관리자에게 알림 메일 전송
 
 ### 테이블 ERD
-- 테이블 모델링
+<img width="800" alt="free_board_ERD1" src="https://github.com/user-attachments/assets/b9e27313-f564-49a3-9d3d-edf89bbe6013">
