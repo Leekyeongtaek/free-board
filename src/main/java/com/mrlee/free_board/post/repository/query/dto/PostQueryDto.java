@@ -26,7 +26,7 @@ public class PostQueryDto {
     private LocalDateTime createdDate;
 
     @QueryProjection
-    public PostQueryDto(Post post, Member member, PostLikesMapping postLikesMapping) {
+    public PostQueryDto(Post post, Member member, Boolean likeYn) {
         this.postId = post.getId();
         this.memberId = member.getId();
         this.author = member.getNickName();
@@ -35,6 +35,6 @@ public class PostQueryDto {
         this.views = post.getViews();
         this.likes = post.getLikes();
         this.createdDate = post.getCreatedDate();
-        this.likeYn = postLikesMapping != null;
+        this.likeYn = likeYn;
     }
 }

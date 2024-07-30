@@ -33,7 +33,7 @@ public class PostQueryRepository {
 
     public PostQueryDto findPost(Long postId, Long loginMemberId) {
 
-        PostQueryDto postQueryDto = queryFactory.select(new QPostQueryDto(post, member, postLikesMapping))
+        PostQueryDto postQueryDto = queryFactory.select(new QPostQueryDto(post, member, postLikesMapping.isNotNull()))
                 .from(post)
                 .join(post.member, member)
                 .leftJoin(postLikesMapping).on(post.id.eq(postLikesMapping.id.postId)

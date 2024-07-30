@@ -13,8 +13,8 @@ public class QPostQueryDto extends ConstructorExpression<PostQueryDto> {
 
     private static final long serialVersionUID = 388527081L;
 
-    public QPostQueryDto(com.querydsl.core.types.Expression<? extends com.mrlee.free_board.post.domain.Post> post, com.querydsl.core.types.Expression<? extends com.mrlee.free_board.member.domain.Member> member, com.querydsl.core.types.Expression<? extends com.mrlee.free_board.post.domain.PostLikesMapping> postLikesMapping) {
-        super(PostQueryDto.class, new Class<?>[]{com.mrlee.free_board.post.domain.Post.class, com.mrlee.free_board.member.domain.Member.class, com.mrlee.free_board.post.domain.PostLikesMapping.class}, post, member, postLikesMapping);
+    public QPostQueryDto(com.querydsl.core.types.Expression<? extends com.mrlee.free_board.post.domain.Post> post, com.querydsl.core.types.Expression<? extends com.mrlee.free_board.member.domain.Member> member, com.querydsl.core.types.Expression<Boolean> likeYn) {
+        super(PostQueryDto.class, new Class<?>[]{com.mrlee.free_board.post.domain.Post.class, com.mrlee.free_board.member.domain.Member.class, boolean.class}, post, member, likeYn);
     }
 
 }
