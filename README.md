@@ -9,11 +9,13 @@
 - [테이블 ERD](#테이블-ERD)
 - [API 코드](#API-코드)
 
+
 ### 프로젝트 버전 정보
 - 개발 도구 : 인텔리제이
 - 자바 : 17
 - 스프링 부트 : 3.3.1
 - MySQL : 8.0.32
+
 
 ### 요구사항 분석
 - 회원 기능
@@ -35,6 +37,7 @@
   - 좋아요 등록/삭제
 - 공통 기능
   - 치명적 예외 발생 또는 API 응답 시간 1.5초 이상인 경우 관리자에게 로그를 확인하라는 경고 메일을 전송
+
 
 ### 기능 요구사항 상세
 - 게시글 기능
@@ -61,8 +64,10 @@
   - 좋아요 등록/삭제
     - comment_likes_mapping 테이블에 데이터가 없는 경우 생성, 이미 존재하는 경우는 삭제한다
 
+
 ### 테이블 ERD
 <img width="800" alt="free_board_ERD1" src="https://github.com/user-attachments/assets/b9e27313-f564-49a3-9d3d-edf89bbe6013">
+
 
 ### API 코드
 #### 게시글 등록
@@ -89,6 +94,7 @@
     postRepository.save(post);
   }
 ```
+
 #### 게시글 상세 조회
 ```
 응답 데이터 예시
@@ -139,6 +145,7 @@
         return postQueryDto;
     }
 ```
+
 #### 게시글 목록 조회
 ```
 응답 데이터 예시
@@ -255,6 +262,7 @@
       return type != null ? post.type.eq(type) : null;
   }
 ```
+
 #### 게시글 삭제
 ```
 컨트롤러 계층
@@ -314,6 +322,7 @@
     }
   }
 ```
+
 #### 댓글 목록 조회
 ```
 응답 데이터 예시
@@ -442,6 +451,7 @@
     return new PageImpl<>(commentQueryDtoList, pageable, totalCount);
   }
 ```
+
 #### 대댓글 목록 조회
 ```
 응답 데이터 예시
@@ -561,6 +571,7 @@
     return new PageImpl<>(childCommentQueryDtoList, pageable, totalCount);
   }
 ```
+
 #### API 응답 시간 1.5초 이상인 경우 관리자에게 메일 알림(스프링AOP)
 <img width="800" alt="스크린샷 2024-07-31 오전 3 18 08" src="https://github.com/user-attachments/assets/95bb2905-e214-4e09-ae43-932cbe3cd892">
 
