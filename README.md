@@ -494,6 +494,8 @@
   }
 ```
 #### API 응답 시간 1.5초 이상인 경우 관리자에게 메일 알림(스프링AOP)
+<img width="800" alt="스크린샷 2024-07-31 오전 3 18 08" src="https://github.com/user-attachments/assets/95bb2905-e214-4e09-ae43-932cbe3cd892">
+
 ```
 @Slf4j
 @RequiredArgsConstructor
@@ -555,5 +557,3 @@ public enum MyMailMessage {
   private String text;
 }
 ```
-#### 메일 예시 이미지
-<img width="800" alt="스크린샷 2024-07-31 오전 3 18 08" src="https://github.com/user-attachments/assets/95bb2905-e214-4e09-ae43-932cbe3cd892">
