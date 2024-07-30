@@ -53,3 +53,10 @@
 <img width="800" alt="free_board_ERD1" src="https://github.com/user-attachments/assets/b9e27313-f564-49a3-9d3d-edf89bbe6013">
 
 ### 주요 기능 코드
+#### 게시글 등록
+```
+```
+#### 게시글 목록 조회
+#### 댓글 목록 조회
+#### 대댓글 목록 조회
+#### API 응답 시간 1.5초 이상인 경우 관리자에게 메일 알림(스프링AOP)
