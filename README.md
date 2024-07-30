@@ -501,57 +501,57 @@
 @Component
 public class MyAspect {
 
-    private final MyMailSender myMailSender;
+  private final MyMailSender myMailSender;
 
-    @Around(value = "execution(* com.mrlee.free_board.post.service.PostService.*(..))")
-    public Object checkExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
-        long startTime = System.currentTimeMillis();
-        Object result = joinPoint.proceed();
-        long endTime = System.currentTimeMillis();
-        long executionTime = endTime - startTime;
-        checkExecutionTime(executionTime, joinPoint);
-        return result;
-    }
+  @Around(value = "execution(* com.mrlee.free_board.post.service.PostService.*(..))")
+  public Object checkExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+      long startTime = System.currentTimeMillis();
+      Object result = joinPoint.proceed();
+      long endTime = System.currentTimeMillis();
+      long executionTime = endTime - startTime;
+      checkExecutionTime(executionTime, joinPoint);
+      return result;
+  }
 
-    private void checkExecutionTime(long executionTime, ProceedingJoinPoint joinPoint) {
-        if (executionTime > 1500) {
-            log.info("실행 시간 = {}", executionTime);
-            log.info("실행 메서드 = {}", joinPoint.getSignature().toShortString());
-            myMailSender.sendMail(MyMailMessage.LowQualityMailMessage);
-        }
-    }
+  private void checkExecutionTime(long executionTime, ProceedingJoinPoint joinPoint) {
+      if (executionTime > 1500) {
+          log.info("실행 시간 = {}", executionTime);
+          log.info("실행 메서드 = {}", joinPoint.getSignature().toShortString());
+          myMailSender.sendMail(MyMailMessage.LowQualityMailMessage);
+      }
+  }
 }
 
 @RequiredArgsConstructor
 @Component
 public class MyMailSender {
 
-    private final JavaMailSender javaMailSender;
+  private final JavaMailSender javaMailSender;
 
-    private final static String receiver = "lkt0520@naver.com";
+  private final static String receiver = "lkt0520@naver.com";
 
-    public void sendMail(MyMailMessage myMailMessage) {
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setSubject(myMailMessage.getSubject());
-        simpleMailMessage.setText(myMailMessage.getText());
-        simpleMailMessage.setTo(receiver);
-        javaMailSender.send(simpleMailMessage);
-    }
+  public void sendMail(MyMailMessage myMailMessage) {
+      SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+      simpleMailMessage.setSubject(myMailMessage.getSubject());
+      simpleMailMessage.setText(myMailMessage.getText());
+      simpleMailMessage.setTo(receiver);
+      javaMailSender.send(simpleMailMessage);
+  }
 }
 
 @Getter
 @RequiredArgsConstructor
 public enum MyMailMessage {
 
-    CriticalMailMessage("[치명적 오류 발생 알림] 자유 게시판 관리자 확인 요망", "서버 로그를 확인 해주시기 바랍니다."),
-    LowQualityMailMessage("[매우 늦은 쿼리 발생 알림] API 응답 속도가 매우 느림 관리자 확인 요망", "서버 로그를 확인 해주시기 바랍니다.");
+  CriticalMailMessage("[치명적 오류 발생 알림] 자유 게시판 관리자 확인 요망", "서버 로그를 확인 해주시기 바랍니다."),
+  LowQualityMailMessage("[매우 늦은 쿼리 발생 알림] API 응답 속도가 매우 느림 관리자 확인 요망", "서버 로그를 확인 해주시기 바랍니다.");
 
-    MyMailMessage(String subject, String text) {
-        this.subject = subject;
-        this.text = text;
-    }
+  MyMailMessage(String subject, String text) {
+      this.subject = subject;
+      this.text = text;
+  }
 
-    private String subject;
-    private String text;
+  private String subject;
+  private String text;
 }
 ```
