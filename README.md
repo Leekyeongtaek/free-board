@@ -256,6 +256,65 @@
       return type != null ? post.type.eq(type) : null;
   }
 ```
+#### 게시글 삭제
+```
+컨트롤러 계층
+  @DeleteMapping("/{postId}")
+  public ResponseEntity<Void> postRemove(@PathVariable(name = "postId") Long postId) {
+    postService.removePost(postId);
+    return new ResponseEntity<>(OK);
+  }
+
+서비스 계층
+  public void removePost(Long postId) {
+    Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당하는 글을 찾을 수 없습니다."));
+    post.hide();
+  }
+
+  @Entity
+  public class Post extends AuditingTime {
+    ...
+    private boolean hiddenYn;
+
+    public void hide() {
+        this.hiddenYn = true;
+    }
+  }
+```
+#### 게시글 좋아요
+```
+컨트롤러 계층
+  @PostMapping("/{postId}/like")
+    public ResponseEntity<Void> requestCommentLike(@PathVariable(name = "postId") Long postId, @RequestBody PostLikesSaveForm form) {
+      postService.requestPostLike(postId, form);
+      return new ResponseEntity<>(OK);
+  }
+
+서비스 계층
+  public void requestPostLike(Long postId, PostLikesSaveForm form) {
+    Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당하는 글을 찾을 수 없습니다."));
+    PostLikesId postLikesId = new PostLikesId(postId, form.getMemberId());
+    Optional<PostLikesMapping> postLikesMapping = postLikesMappingRepository.findById(postLikesId);
+    if (postLikesMapping.isPresent()) {
+        postLikesMappingRepository.delete(postLikesMapping.get());
+        post.minusLikes();
+    } else {
+        postLikesMappingRepository.save(new PostLikesMapping(postLikesId));
+        post.plusLikes();
+    }
+  }
+
+  @Entity
+  public class Post extends AuditingTime {
+    ...
+    public void plusLikes() {
+        this.likes++;
+    }
+    public void minusLikes() {
+        this.likes--;
+    }
+  }
+```
 #### 댓글 목록 조회
 ```
 응답 데이터 예시
@@ -501,40 +560,6 @@
             .fetchOne();
   
     return new PageImpl<>(childCommentQueryDtoList, pageable, totalCount);
-  }
-```
-#### 게시글 좋아요
-```
-컨트롤러 계층
-  @PostMapping("/{postId}/like")
-    public ResponseEntity<Void> requestCommentLike(@PathVariable(name = "postId") Long postId, @RequestBody PostLikesSaveForm form) {
-      postService.requestPostLike(postId, form);
-      return new ResponseEntity<>(OK);
-  }
-
-서비스 계층
-  public void requestPostLike(Long postId, PostLikesSaveForm form) {
-    Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당하는 글을 찾을 수 없습니다."));
-    PostLikesId postLikesId = new PostLikesId(postId, form.getMemberId());
-    Optional<PostLikesMapping> postLikesMapping = postLikesMappingRepository.findById(postLikesId);
-    if (postLikesMapping.isPresent()) {
-        postLikesMappingRepository.delete(postLikesMapping.get());
-        post.minusLikes();
-    } else {
-        postLikesMappingRepository.save(new PostLikesMapping(postLikesId));
-        post.plusLikes();
-    }
-  }
-
-  @Entity
-  public class Post extends AuditingTime {
-    ...
-    public void plusLikes() {
-        this.likes++;
-    }
-    public void minusLikes() {
-        this.likes--;
-    }
   }
 ```
 #### API 응답 시간 1.5초 이상인 경우 관리자에게 메일 알림(스프링AOP)
