@@ -555,4 +555,5 @@ public enum MyMailMessage {
   private String text;
 }
 ```
-<img width="1188" alt="스크린샷 2024-07-31 오전 3 18 08" src="https://github.com/user-attachments/assets/95bb2905-e214-4e09-ae43-932cbe3cd892">
+#### 메일 예시 이미지
+<img width="800" alt="스크린샷 2024-07-31 오전 3 18 08" src="https://github.com/user-attachments/assets/95bb2905-e214-4e09-ae43-932cbe3cd892">
