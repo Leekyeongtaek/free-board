@@ -61,7 +61,6 @@ public class CommentQueryRepository {
                 .groupBy(comment.id)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(comment.id.desc())
                 .fetch();
 
         Long totalCount = queryFactory.select(comment.count())
