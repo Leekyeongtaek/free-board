@@ -8,6 +8,7 @@ import com.mrlee.free_board.post.repository.query.dto.QCommentQueryDtoList;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,14 +23,15 @@ import static com.mrlee.free_board.post.domain.QCommentLikesMapping.commentLikes
 import static com.mrlee.free_board.post.domain.QPost.post;
 
 @Slf4j
+@RequiredArgsConstructor
 @Repository
 public class CommentQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public CommentQueryRepository(JPAQueryFactory queryFactory) {
-        this.queryFactory = queryFactory;
-    }
+//    public CommentQueryRepository(JPAQueryFactory queryFactory) {
+//        this.queryFactory = queryFactory;
+//    }
 
     /*
     쿼리 기록

@@ -9,17 +9,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Getter
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommentLikesId {
 
-    @EqualsAndHashCode.Include
     @Column(name = "comment_id")
     private Long commentId;
 
-    @EqualsAndHashCode.Include
     @Column(name = "member_Id")
     private Long memberId;
 

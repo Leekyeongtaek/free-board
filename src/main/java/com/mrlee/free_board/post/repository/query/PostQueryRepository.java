@@ -8,6 +8,7 @@ import com.mrlee.free_board.post.repository.query.dto.QPostQueryDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,14 +23,15 @@ import static com.mrlee.free_board.post.domain.QPost.post;
 import static com.mrlee.free_board.post.domain.QPostLikesMapping.postLikesMapping;
 
 @Slf4j
+@RequiredArgsConstructor
 @Repository
 public class PostQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public PostQueryRepository(JPAQueryFactory queryFactory) {
-        this.queryFactory = queryFactory;
-    }
+//    public PostQueryRepository(JPAQueryFactory queryFactory) {
+//        this.queryFactory = queryFactory;
+//    }
 
     public PostQueryDto findPost(Long postId, Long loginMemberId) {
 
